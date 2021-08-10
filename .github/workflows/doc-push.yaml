@@ -1,10 +1,13 @@
-name: DocBuild
+name: Docs Push
 
 on:
-  pull_request:
+  push:
+    branches:
+      - master
+      - docspush
 
 jobs:
-  docbuild:
+  docpush:
     runs-on: ubuntu-18.04
     steps:
       - name: Setup Python
@@ -16,25 +19,34 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          set -eux
+          set -ex
           pip install -r dev-requirements.txt
           pip install -r docs/requirements.txt
       - name: Install TorchX
         run: |
+          set -ex
           python setup.py develop
       - name: Doc Test
         run: |
+          set -ex
           cd docs
           make doctest
       - name: Linkcheck
         run: |
+          set -ex
           cd docs
           make linkcheck
       - name: Doc Build
         run: |
+          set -ex
           cd docs
           make html
       - name: Papermill
         run: |
+          set -ex
           cd docs
           make papermill
+      - name: Push
+        run: |
+          set -ex
+          docs/doc_push.sh
